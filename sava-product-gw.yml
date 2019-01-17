@@ -1,0 +1,4 @@
+name: sava-product
+port: 9070
+selector: label(app)(sava-product) && label(version)((.*))
+
