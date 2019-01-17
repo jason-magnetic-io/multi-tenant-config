@@ -58,8 +58,8 @@ jobs:
       - run:
           name: Connect to Vamp
           command: |
+            vamp create gateway -f sava-product-gw.yml
             vamp list gateways
-            ls
       
 workflows:
   version: 2
