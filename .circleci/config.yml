@@ -25,7 +25,7 @@ jobs:
             gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE
             gcloud --quiet container clusters get-credentials $GOOGLE_CLUSTER_NAME
             kubectl get namespaces
-       - run:
+      - run:
           name: Deploy
           command: |
             KUBERNETES_NAMESPACE=default
