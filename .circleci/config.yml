@@ -1,19 +1,35 @@
-version: 2  # CircleCI version
+version: 2
+defaults: &defaults
+  docker:
+    - image: google/cloud-sdk@sha256:126a49cfa2aa6e20d561fa14999bf657bc341efeba04939bd2f612bf843d12a6
 jobs:
-  deploy-production:
-    docker:
-      - image: google/cloud-sdk:latest
+  deploy:
+    <<: *defaults
     steps:
       - checkout
+      - setup_remote_docker
+      - attach_workspace:
+          at: workspace
       - run:
-          commmand: ./authenticate-gcloud.sh
+          name: Install utils
+          command: |
+            apt-get update
+            apt-get install jq
       - run:
-          command: ./deploy.sh
+          name: Deploy
+          command: |
+            echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
+            set -x
+            gcloud auth activate-service-account --key-file gcloud-service-key.json
+            gcloud --quiet config set project $GOOGLE_PROJECT_ID
+            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE
+            gcloud --quiet container clusters get-credentials $GOOGLE_CLUSTER_NAME
+            kubectl get namespaces
 workflows:
   version: 2
-  deploy-production:
+  build-deploy:
     jobs:
-      - deploy-production:
+      - deploy:
           filters:
             branches:
               only: master
