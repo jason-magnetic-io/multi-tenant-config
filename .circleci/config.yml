@@ -1,9 +1,9 @@
 version: 2
 defaults: &defaults
   docker:
-    - image: google/cloud-sdk@sha256:126a49cfa2aa6e20d561fa14999bf657bc341efeba04939bd2f612bf843d12a6
+    - image: google/cloud-sdk:latest
 jobs:
-  deploy:
+  create-env:
     <<: *defaults
     steps:
       - checkout
@@ -45,12 +45,26 @@ jobs:
             LIFTER_POD=$(kubectl get pods -l app=lifter -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
             kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -X GET -o /vga.yml http://127.0.0.1:8081/api/vga
             kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST --data-binary "@/vga.yml" http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/vga
+
+  deploy-gateways:
+    docker:
+      - image: node:latest
+    steps:
+      - checkout
+      - run:
+          name: Install Vamp CLI
+          command: |
+            npm install vamp-cli-ee
+      - run:
+          name: Connect to Vamp
+          command: |
+            vamp
       
 workflows:
   version: 2
-  build-deploy:
+  create-env-deploy-gateways:
     jobs:
-      - deploy:
+      - deploy-gateways:
           filters:
             branches:
               only: master
