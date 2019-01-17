@@ -58,7 +58,8 @@ jobs:
       - run:
           name: Connect to Vamp
           command: |
-            vamp
+            vamp list gateways
+            ls
       
 workflows:
   version: 2
