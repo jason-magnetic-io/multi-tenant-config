@@ -64,7 +64,7 @@ workflows:
       - create-env
       - deploy-gateways:
           requires:
-            - build
+            - create-env
           filters:
             branches:
               only: master
