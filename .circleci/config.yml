@@ -54,7 +54,7 @@ jobs:
       - run:
           name: Install Vamp CLI
           command: |
-            npm install vamp-cli-ee
+            npm install vamp-cli-ee -g
       - run:
           name: Connect to Vamp
           command: |
