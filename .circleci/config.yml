@@ -31,23 +31,20 @@ jobs:
               kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment vamp-workflow-quantification 2>/dev/null
             fi
             set -e
-            KUBERNETES_NAMESPACE=default
-            LIFTER_POD=$(kubectl --namespace ${KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
-            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X PUT -H "Content-Type: application/json" -d '{}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest
-            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d '{"artifacts":{"/usr/local/vamp/artifacts/breeds/quantification.yml":true,"/usr/local/vamp/artifacts/workflows/quantification.yml":true,"/usr/local/vamp/artifacts/breeds/vamp-workflow-javascript.yml":true},"persistence":true,"pulse":true,"key_value":true,"namespace":false}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/setup
+            LIFTER_POD=$(kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X PUT -H "Content-Type: application/json" -d '{}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d '{"artifacts":{"/usr/local/vamp/artifacts/breeds/quantification.yml":true,"/usr/local/vamp/artifacts/workflows/quantification.yml":true,"/usr/local/vamp/artifacts/breeds/vamp-workflow-javascript.yml":true},"persistence":true,"pulse":true,"key_value":true,"namespace":false}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/setup
       - run:
           name: Restart Vamp
           command: |
-            KUBERNETES_NAMESPACE=default
-            kubectl --namespace ${KUBERNETES_NAMESPACE} delete pods -l app=vamp
-            kubectl --namespace ${KUBERNETES_NAMESPACE} rollout status deployment.v1beta1.apps/vamp
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} delete pods -l app=vamp
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} rollout status deployment.v1beta1.apps/vamp
       - run:
           name: Deploy VGAs
           command: |
-            KUBERNETES_NAMESPACE=default
-            LIFTER_POD=$(kubectl --namespace ${KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
-            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -X GET -o /vga.yml http://127.0.0.1:8081/api/vga
-            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST --data-binary "@/vga.yml" http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/vga
+            LIFTER_POD=$(kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -X GET -o /vga.yml http://127.0.0.1:8081/api/vga
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST --data-binary "@/vga.yml" http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/vga
 
   deploy-gateways:
     docker:
