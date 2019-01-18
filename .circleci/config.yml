@@ -20,10 +20,19 @@ jobs:
       - run:
           name: Create tenant environment
           command: |
+            ENVIRONMENT_NAMESPACE=vampio-organization-cctest
+            ns=`kubectl get namespace ${ENVIRONMENT_NAMESPACE} --no-headers --output=go-template={{.metadata.name}} 2>/dev/null`
+            if [ -z "${ns}" ]; then
+              kubectl create namespace ${ENVIRONMENT_NAMESPACE}
+            else
+              # remove vamp artifacts
+              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment,service vamp-gateway-agent 2>/dev/null
+              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment vamp-workflow-quantification 2>/dev/null
+            fi
             KUBERNETES_NAMESPACE=default
-            LIFTER_POD=$(kubectl get pods -l app=lifter -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+            LIFTER_POD=$(kubectl --namespace ${KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
             kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X PUT -H "Content-Type: application/json" -d '{}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest
-            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d '{"artifacts":{"/usr/local/vamp/artifacts/breeds/quantification.yml":true,"/usr/local/vamp/artifacts/workflows/quantification.yml":true,"/usr/local/vamp/artifacts/breeds/vamp-workflow-javascript.yml":true},"persistence":true,"pulse":true,"key_value":true,"namespace":true}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/setup
+            kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d '{"artifacts":{"/usr/local/vamp/artifacts/breeds/quantification.yml":true,"/usr/local/vamp/artifacts/workflows/quantification.yml":true,"/usr/local/vamp/artifacts/breeds/vamp-workflow-javascript.yml":true},"persistence":true,"pulse":true,"key_value":true,"namespace":false}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/setup
       - run:
           name: Restart Vamp
           command: |
@@ -34,7 +43,7 @@ jobs:
           name: Deploy VGAs
           command: |
             KUBERNETES_NAMESPACE=default
-            LIFTER_POD=$(kubectl get pods -l app=lifter -o go-template --template '{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}')
+            LIFTER_POD=$(kubectl --namespace ${KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
             kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -X GET -o /vga.yml http://127.0.0.1:8081/api/vga
             kubectl --namespace ${KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST --data-binary "@/vga.yml" http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/vga
 
