@@ -33,7 +33,7 @@ jobs:
             set -e
             LIFTER_POD=$(kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
             kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -X GET -o /tmp/env.json http://127.0.0.1:8081/api/templates/operation
-            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- jq '.vamp.metadata.namespace.title = $newTitle' --arg newTitle cctest /tmp/env.json > /tmp/tmp.$$.json && mv /tmp/tmp.$$.json /tmp/env.json
+            kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- bash -c "jq '.vamp.metadata.namespace.title = \"cctest\"' /tmp/env.json > /tmp/tmp.$$.json && mv /tmp/tmp.$$.json /tmp/env.json"
             kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X PUT -H "Content-Type: application/json" --data-binary "@/tmp/env.json" http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest
             kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} exec ${LIFTER_POD} -- curl -s -o /dev/null -X POST -H "Content-Type: application/json" -d '{"artifacts":{"/usr/local/vamp/artifacts/breeds/quantification.yml":true,"/usr/local/vamp/artifacts/workflows/quantification.yml":true,"/usr/local/vamp/artifacts/breeds/vamp-workflow-javascript.yml":true},"persistence":true,"pulse":true,"key_value":true,"namespace":false}' http://127.0.0.1:8081/api/namespaces/vampio-organization-cctest/setup
       - run:
