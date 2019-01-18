@@ -22,12 +22,13 @@ jobs:
           command: |
             ENVIRONMENT_NAMESPACE=vampio-organization-cctest
             ns=`kubectl get namespace ${ENVIRONMENT_NAMESPACE} --no-headers --output=go-template={{.metadata.name}} 2>/dev/null`
+            echo ${ns}
             if [ -z "${ns}" ]; then
               kubectl create namespace ${ENVIRONMENT_NAMESPACE}
             else
               # remove vamp artifacts
-              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment,service vamp-gateway-agent 2>/dev/null
-              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment vamp-workflow-quantification 2>/dev/null
+              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment,service vamp-gateway-agent 
+              kubectl --namespace ${ENVIRONMENT_NAMESPACE} delete deployment vamp-workflow-quantification 
             fi
             KUBERNETES_NAMESPACE=default
             LIFTER_POD=$(kubectl --namespace ${KUBERNETES_NAMESPACE} get pods -l app=lifter --output=go-template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' 2>/dev/null)
