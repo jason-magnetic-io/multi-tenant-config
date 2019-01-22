@@ -20,7 +20,6 @@ jobs:
       - run:
           name: Create tenant environment
           command: |
-            ENVIRONMENT_NAMESPACE=vampio-organization-cctest
             set +e
             ns=`kubectl get namespace ${ENVIRONMENT_NAMESPACE} --no-headers --output=go-template={{.metadata.name}} 2>/dev/null`
             if [ -z "${ns}" ]; then
