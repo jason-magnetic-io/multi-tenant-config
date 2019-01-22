@@ -1,3 +1,3 @@
 # multi-tenant-config
 
-Update
+Updated to use 1.0.5
