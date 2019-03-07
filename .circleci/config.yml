@@ -4,6 +4,7 @@ defaults: &defaults
     - image: vampio/kmt:circleci-0.2.0
 orbs:
   gcp-cli: circleci/gcp-cli@1.1.0
+  kubernetes: circleci/kubernetes@0.1.0
 jobs:
   create-env:
     <<: *defaults
@@ -11,9 +12,11 @@ jobs:
       - checkout
       - gcp-cli/install
       - gcp-cli/initialize
+      - kubernetes:install
       - run:
           name: Connect to cluster
           command: |
+            gcloud --quiet container clusters get-credentials $GOOGLE_CLUSTER_NAME
             kubectl get namespaces
       - run:
           name: Create tenant environment
