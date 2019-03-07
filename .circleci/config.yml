@@ -1,7 +1,9 @@
 version: 2
 defaults: &defaults
   docker:
-    - image: google/cloud-sdk:latest
+    - image: vampio/kmt:circleci-0.2.0
+orbs:
+  gcp-cli: circleci/gcp-cli@1.1.0
 jobs:
   create-env:
     <<: *defaults
@@ -12,10 +14,8 @@ jobs:
           command: |
             echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
             set -x
-            gcloud auth activate-service-account --key-file gcloud-service-key.json
-            gcloud --quiet config set project $GOOGLE_PROJECT_ID
-            gcloud --quiet config set compute/zone $GOOGLE_COMPUTE_ZONE
-            gcloud --quiet container clusters get-credentials $GOOGLE_CLUSTER_NAME
+            gcp-cli/install
+            gcp-cli/initialize
             kubectl get namespaces
       - run:
           name: Create tenant environment
@@ -50,10 +50,6 @@ jobs:
       - image: node:latest
     steps:
       - checkout
-      - run:
-          name: Install Vamp CLI
-          command: |
-            npm install vamp-cli-ee -g
       - run:
           name: Connect to Vamp
           command: |
