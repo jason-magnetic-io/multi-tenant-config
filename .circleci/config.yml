@@ -26,12 +26,12 @@ jobs:
       - run:
           name: Create org
           command: |
-            forklift list organizations
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
-              echo "no match"
+              echo "Creating organization: $organization"
+              forklift create organization $organization --configuration org-$organization.yaml
             fi
-
+            forklift list organizations
 workflows:
   version: 2
   create-env-deploy-gateways:
