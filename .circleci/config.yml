@@ -21,6 +21,7 @@ jobs:
       - run:
           name: Create org
           command: |
+            forklift list organizations
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "no match"
