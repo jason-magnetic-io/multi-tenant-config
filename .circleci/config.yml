@@ -24,7 +24,9 @@ jobs:
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "no match"
-              forklift create organization $organization --configuration ./org-$organization.yaml --config forklift-config.yaml
+              ls -la 
+              ls -la org-$organization.yaml
+              forklift create organization $organization --configuration org-$organization.yaml --config forklift-config.yaml
             fi
 
 workflows:
