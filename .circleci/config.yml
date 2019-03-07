@@ -19,9 +19,13 @@ jobs:
             gcloud --quiet container clusters get-credentials $GOOGLE_CLUSTER_NAME
             kubectl get namespaces
       - run:
+          name: Set forklift config
+          command: |
+            cp forklift-config.yaml ~/.forklift/config.yaml
+      - run:
           name: Create org
           command: |
-            forklift list organizations --config ./forklift-config.yaml
+            forklift list organizations
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "no match"
