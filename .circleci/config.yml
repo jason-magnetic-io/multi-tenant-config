@@ -9,13 +9,11 @@ jobs:
     <<: *defaults
     steps:
       - checkout
+      - gcp-cli/install
+      - gcp-cli/initialize
       - run:
           name: Connect to cluster
           command: |
-            echo $GCLOUD_SERVICE_KEY | base64 --decode --ignore-garbage > gcloud-service-key.json
-            set -x
-            gcp-cli/install
-            gcp-cli/initialize
             kubectl get namespaces
       - run:
           name: Create tenant environment
