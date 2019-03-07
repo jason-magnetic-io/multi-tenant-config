@@ -1,7 +1,7 @@
 version: 2.1
 defaults: &defaults
   docker:
-    - image: vampio/kmt:circleci-0.2.0
+    - image: vampio/kmt:circleci-latest
 orbs:
   gcp-cli: circleci/gcp-cli@1.1.0
   kubernetes: circleci/kubernetes@0.1.0
@@ -24,14 +24,19 @@ jobs:
             mkdir ~/.forklift
             cp forklift-config.yaml ~/.forklift/config.yaml
       - run:
-          name: Create org
+          name: Create org and env
           command: |
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "Creating organization: $organization"
               forklift create organization $organization --configuration org-$organization.yaml
             fi
-            forklift list organizations
+            environment=eu
+            if [ ! "$(forklift list environments --organization $organization | awk -v env=$environment '$2 == env {print $2}')" = $environment ]; then
+              echo "Creating environment: $environment"
+            fi
+            forklift list environments --organization $organization 
+
 workflows:
   version: 2
   create-env-deploy-gateways:
