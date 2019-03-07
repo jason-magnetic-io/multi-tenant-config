@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 defaults: &defaults
   docker:
     - image: vampio/kmt:circleci-0.2.0
