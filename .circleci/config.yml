@@ -21,12 +21,10 @@ jobs:
       - run:
           name: Create org
           command: |
-            forklift list organizations
+            forklift list organizations --config ./forklift-config.yaml
             organization=tutorial5
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "no match"
-              env
-              forklift create organization $organization --configuration org-$organization.yaml --config forklift-config.yaml
             fi
 
 workflows:
