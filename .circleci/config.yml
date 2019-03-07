@@ -12,7 +12,7 @@ jobs:
       - checkout
       - gcp-cli/install
       - gcp-cli/initialize
-      - kubernetes:install
+      - kubernetes/install
       - run:
           name: Connect to cluster
           command: |
