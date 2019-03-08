@@ -36,8 +36,10 @@ jobs:
             if [ ! "$(forklift list environments --organization $organization | awk -v env=$environment '$2 == env {print $2}')" = $environment ]; then
               echo "Creating environment: $organization-$environment"
               forklift create environment $environment --organization $organization --configuration env-$organization-$environment.yaml --artifacts ./artifacts
+              echo "Restarting Vamp"
+              kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} delete pods -l app=vamp
+              kubectl --namespace ${VAMP_KUBERNETES_NAMESPACE} rollout status deployment.v1beta1.apps/vamp
             fi
-            forklift list environments --organization $organization 
 
 workflows:
   version: 2
