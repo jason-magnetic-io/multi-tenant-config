@@ -1,6 +1,1 @@
-{
-  "name": "tutorial5-admin",
-  "password":"abc12345",
-  "kind":"users",
-  "roles":["user-role"]
-}
+{"name": "tutorial5-admin","password":"abc12345","kind":"users", "roles":["admin"]}
