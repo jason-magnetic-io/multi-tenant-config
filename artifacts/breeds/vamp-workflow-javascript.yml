@@ -1,0 +1,26 @@
+name: vamp-workflow-javascript
+kind: breeds
+metadata: {}
+deployable:
+  definition: magneticio/vamp-workflow-agent:1.1-rc1
+ports:
+  webport: 8080/http
+environment_variables:
+  VAMP_WORKFLOW_DATA: ${data}
+  VAMP_NAMESPACE: ${config://vamp.namespace}
+  VAMP_WORKFLOW_EXECUTION_TIMEOUT: ${config://vamp.workflow-driver.workflow.vamp-workflow-execution-timeout}
+  VAMP_KEY_VALUE_STORE_CONNECTION: ${config://vamp.workflow-driver.workflow.vamp-key-value-store-connection}
+  VAMP_GATEWAY_DRIVER_ELASTICSEARCH_METRICS_TYPE: log
+  VAMP_KEY_VALUE_STORE_TOKEN: ${config://vamp.workflow-driver.workflow.vamp-key-value-store-token}
+  VAMP_KEY_VALUE_STORE_PATH: ${config://vamp.workflow-driver.workflow.vamp-key-value-store-path}
+  VAMP_WORKFLOW_EXECUTION_PERIOD: ${config://vamp.workflow-driver.workflow.vamp-workflow-execution-period}
+  VAMP_API_TOKEN: ${vamp://token}
+  VAMP_GATEWAY_DRIVER_ELASTICSEARCH_METRICS_INDEX: vamp-vga-${config://vamp.namespace}-*
+  VAMP_ELASTICSEARCH_URL: ${config://vamp.workflow-driver.workflow.vamp-elasticsearch-url}
+  VAMP_KEY_VALUE_STORE_TYPE: ${config://vamp.workflow-driver.workflow.vamp-key-value-store-type}
+  VAMP_URL: ${config://vamp.workflow-driver.workflow.vamp-url}
+  VAMP_PULSE_ELASTICSEARCH_URL: ${config://vamp.pulse.elasticsearch.url}
+constants: {}
+arguments:
+- privileged: 'true'
+dependencies: {}
