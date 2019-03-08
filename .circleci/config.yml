@@ -33,7 +33,8 @@ jobs:
             fi
             environment=eu
             if [ ! "$(forklift list environments --organization $organization | awk -v env=$environment '$2 == env {print $2}')" = $environment ]; then
-              echo "Creating environment: $environment"
+              echo "Creating environment: $organization-$environment"
+              forklift create environment $environment --organization $organization --configuration env-$organization-$environment.yaml --artifacts ./artifacts
             fi
             forklift list environments --organization $organization 
 
