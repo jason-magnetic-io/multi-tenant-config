@@ -30,6 +30,7 @@ jobs:
             if [ ! "$(forklift list organizations | awk -v org=$organization '$2 == org {print $2}')" = $organization ]; then
               echo "Creating organization: $organization"
               forklift create organization $organization --configuration org-$organization.yaml
+              forklift add user --organization $organization --configuration user-$organization-admin.json
             fi
             environment=eu
             if [ ! "$(forklift list environments --organization $organization | awk -v env=$environment '$2 == env {print $2}')" = $environment ]; then
